@@ -37,6 +37,8 @@
 
 ### 使用案例
 
+#### 模板语法
+
 1. 插入操作
 
 ```hbs
@@ -69,6 +71,19 @@
   <p>这是替换后的内容</p>
 </div>
 {{! /replace }}
+```
+
+#### js调用
+
+```js
+import HbsCommander from 'hsb-commander'
+
+const commander = new HbsCommander()
+
+commander.cmd({
+  template: './example/template.hbs',
+  target: './target/file.vue',
+})
 ```
 
 ## 开发指南
