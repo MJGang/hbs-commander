@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
-import HbsCommander from '../../src/index.js'
+import HbsCommander from '../../dist/hbs-commander.esm.js'
 import fs from 'fs'
 import path from 'path'
 

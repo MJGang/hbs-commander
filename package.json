@@ -2,11 +2,17 @@
   "name": "hbs-commander",
   "version": "1.0.0",
   "description": "A library for intelligently inserting and replacing Handlebars templates with context-aware placement",
-  "main": "index.js",
+  "main": "dist/hbs-commander.cjs.js",
+  "module": "dist/hbs-commander.esm.js",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build": "rollup -c",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "handlebars",
@@ -18,14 +24,16 @@
   "author": "MJGang",
   "license": "MIT",
   "dependencies": {
-    "handlebars": "^4.7.8",
-    "magic-string": "^0.30.17"
+    "handlebars": "^4.7.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.16.0",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
     "eslint": "^9.16.0",
     "globals": "^15.13.0",
     "prettier": "^3.4.1",
+    "rollup": "^4.31.0",
     "vitest": "^3.0.2"
   }
 }
