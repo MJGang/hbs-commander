@@ -23,7 +23,7 @@ describe('HbsCommander 替换模式测试', () => {
   <div>测试</div>
 </template>`,
       },
-    }
+    },
   ]
 
   beforeAll(() => {
