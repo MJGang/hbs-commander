@@ -1,0 +1,30 @@
+{
+  "name": "hbs-commander",
+  "version": "1.0.0",
+  "description": "A library for intelligently inserting and replacing Handlebars templates with context-aware placement",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [
+    "handlebars",
+    "template",
+    "insertion",
+    "replacement",
+    "placement"
+  ],
+  "author": "MJGang",
+  "license": "MIT",
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "magic-string": "^0.30.17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.16.0",
+    "eslint": "^9.16.0",
+    "globals": "^15.13.0",
+    "prettier": "^3.4.1",
+    "vitest": "^3.0.2"
+  }
+}

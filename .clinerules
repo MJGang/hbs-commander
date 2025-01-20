@@ -1,0 +1,41 @@
+# hbs-commander 该项目是为了简化用户操作handlebars模板的工具
+# 语法规则
+## 利用hbs注释方式，通过解析注释内容，来注入语法规则
+# 名词解释
+## tagName: 操作类型（如 insert、replace）
+## key 属性的键
+## value 属性的值
+
+# 示例
+
+- 我现在有一个hbs文件，
+- 开区间的规则是{{!-- tagName --}}，有且仅有这种形式。
+- 闭区间的规则是{{!-- /tagName --}}，有且仅有这种形式。
+- 属性传参的规则和vue一样`:key="value"`的形式
+    - 可以存在多个不同的key和value,且不同
+    - 包裹value的形式一定是双引号，不考虑单引号的场景
+    - value是形如js的值，如字符串/布尔值/对象/数组/null/NaN等
+        - 如果value是字符串则形如`:str="'我是字符串'"`,这里的【我是字符串】外面包裹的一定是单引号。不需要考虑双引号转义字符的场景
+        - 如果value是布尔值则形如`:isShow="true"`
+        - 如果value是对象则形如`:obj="{a: 1, b:'2'}"`
+- 需要模仿vue3解析开闭区间的方式去解析它，拿到tagName，和里面属性的key和value
+
+```hbs
+{{!-- insert :str="'2,3,4,5'" :www="true" :num="2" --}}
+<div>新增的内容</div>
+{{!-- /insert --}}
+{{!-- insert :range="[2,3,4,5]" :obj="{a: 1, b:'b', c: [1], d: true}" :isShow="false" --}}<div>新增的内容</div>{{!-- /insert --}}
+{{!-- replace --}}
+<div>替换的内容</div>
+{{!-- /replace --}}
+{{!-- replace --}}<div>替换的内容</div>{{!-- /replace --}}
+```
+
+## 功能实现的要求
+
+- 需要运用类似于状态机的方式，逐个字符去遍历，解析出开闭区间
+- 可以参考src/zzz.js里的内容，也可以自己实现，首先声明zzz.js里的内容存在问题，不可完全信任
+- 之前的已存在的代码是我未考虑全面生成的内容，需要替换或修改或删除
+- 已经存在的测试用例也是老旧的，需要按照此文档去更新
+- insert会解析属性startRow,startCol，且传参是数字，然后根据这个位置去插入开区间和闭区间内的内容
+- replace会解析属性startRow,startCol,endRow,endCol,且对应的value为数字，然后根据这个范围去替换开区间和闭区间内的内容
