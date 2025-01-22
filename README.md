@@ -15,19 +15,19 @@
 1. 基本结构
 
 ```hbs
-{{! 操作类型 :参数名="参数值" }}
+{{!-- 操作类型 :参数名="参数值" --}}
 操作内容
-{{! /操作类型 }}
+{{!-- /操作类型 --}}
 ```
 
 2. 操作类型
 
-- `insert`: 在指定位置插入内容
-- `replace`: 替换指定范围的内容
+操作类型支持：append、appendLeft、appendRight、update、prepend、prependLeft 、prependRight 、replace、replaceAll、overwrite
 
 3. 参数说明
 
 - 参数格式：`:参数名="参数值"`
+- 参数名：参考magic-string的对应入参，[magic-string](https://github.com/Rich-Harris/magic-string?tab=readme-ov-file#methods)
 - 参数值支持类型：
   - 字符串：`:str="'字符串内容'"`
   - 布尔值：`:isShow="true"`
@@ -39,82 +39,113 @@
 
 #### 模板语法
 
-1. 插入操作
+1. append
 
 ```hbs
-{{! insert :startRow="10" :startCol="5" }}
+{{!-- append --}}
 <div class='new-content'>
-  <p>这是新插入的内容</p>
+  <p>append内容</p>
 </div>
-{{! /insert }}
+{{!-- /append --}}
 ```
 
-2. 替换操作
+2. appendLeft
 
 ```hbs
-{{! replace :startRow="5" :startCol="1" :endRow="8" :endCol="10" }}
-<div class='replaced-content'>
-  <p>这是替换后的内容</p>
+{{!-- appendLeft :index="2" --}}
+<div class='new-content'>
+  <p>appendLeft内容</p>
 </div>
-{{! /replace }}
+{{!-- /appendLeft --}}
 ```
 
-3. 复杂参数示例
+3. appendRight
 
 ```hbs
-{{! insert :startRow="1" :startCol="0" }}
-<MyComponent :title='config.props.title' />
-{{! /insert }}
-
-{{! replace :startRow="5" :startCol="1" :endRow="8" :endCol="10" }}
-<div class='replaced-content'>
-  <p>这是替换后的内容</p>
+{{!-- appendRight :index="2" --}}
+<div class='new-content'>
+  <p>appendRight内容</p>
 </div>
-{{! /replace }}
+{{!-- /appendRight --}}
+```
+
+4. update
+
+```hbs
+{{!-- update :start="2" :end="4" --}}
+<div class='new-content'>
+  <p>update内容</p>
+</div>
+{{!-- /update --}}
+```
+
+5. prepend
+
+```hbs
+{{!-- prepend --}}
+<div class='new-content'>
+  <p>prepend内容</p>
+</div>
+{{!-- /prepend --}}
+```
+
+6. prependLeft 
+
+```hbs
+{{!-- prependLeft :index="3" --}}
+<div class='new-content'>
+  <p>prependLeft  内容</p>
+</div>
+{{!-- /prependLeft --}}
+```
+
+7. prependRight
+
+```hbs
+{{!-- prependRight :index="3" --}}
+<div class='new-content'>
+  <p>prependRight  内容</p>
+</div>
+{{!-- /prependRight --}}
+```
+
+8. replace
+
+```hbs
+{{!-- replace :regexpOrString="'old内容'" --}}
+<div class='new-content'>
+  <p>replace 内容</p>
+</div>
+{{!-- /replace --}}
+```
+
+9. replaceAll
+
+```hbs
+{{!-- replaceAll :regexpOrString="'old内容'" --}}
+<div class='new-content'>
+  <p>replaceAll 内容</p>
+</div>
+{{!-- /replaceAll --}}
+```
+
+10. overwrite
+
+```hbs
+{{!-- overwrite :start="2" :end="4" --}}
+<div class='new-content'>
+  <p>overwrite 内容</p>
+</div>
+{{!-- /overwrite --}}
 ```
 
 #### js调用
 
 ```js
-import HbsCommander from 'hsb-commander'
+import hbscmd from 'hsb-commander'
 
-const commander = new HbsCommander()
-
-commander.cmd({
+hbscmd({
   template: './example/template.hbs',
   target: './target/file.vue',
 })
 ```
-
-## 开发指南
-
-1. 安装依赖
-
-```bash
-pnpm install
-```
-
-2. 运行测试
-
-```bash
-pnpm test
-```
-
-3. 代码格式化
-
-```bash
-pnpm format
-```
-
-## 测试说明
-
-测试用例位于`test/`目录下，包含：
-
-- insert操作测试
-- replace操作测试
-
-每个测试包含：
-
-- 模板文件(.hbs)
-- 目标文件(.vue)
-- 测试脚本(.test.js)

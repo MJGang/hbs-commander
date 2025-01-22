@@ -1,61 +1,47 @@
+import MagicString from 'magic-string'
+
 export function executeOperations(operations, target) {
-  const lines = target.split('\n')
+  const s = new MagicString(target)
 
-  // 从后往前处理操作，避免影响位置
-  operations
-    .sort((a, b) => b.startIndex - a.startIndex)
-    .forEach((op) => {
-      if (op.type === 'insert') {
-        handleInsert(op, lines)
-      } else if (op.type === 'replace') {
-        handleReplace(op, lines)
-      }
-    })
+  operations.forEach((op) => {
+    const { attrs, content, type } = op
+    switch (type) {
+      case 'append':
+        s.append(content)
+        break
+      case 'appendLeft':
+        s.appendLeft(attrs.index, content)
+        break
+      case 'appendRight':
+        s.appendRight(attrs.index, content)
+        break
+      case 'overwrite':
+        s.overwrite(attrs.start, attrs.end, content)
+        break
 
-  return lines.join('\n')
-}
+      case 'prepend':
+        s.prepend(content)
+        break
+      case 'prependLeft':
+        s.prependLeft(attrs.index, content)
+        break
+      case 'prependRight':
+        s.prependRight(attrs.index, content)
+        break
+      case 'replace':
+        s.replace(attrs.regexpOrString, content)
+        break
+      case 'replaceAll':
+        s.replaceAll(attrs.regexpOrString, content)
+        break
+      case 'update':
+        s.update(attrs.start, attrs.end, content)
+        break
 
-function handleInsert(op, lines) {
-  const { startRow, startCol } = op.attrs
-  if (startRow === undefined || startCol === undefined) {
-    throw new Error('Missing required position attributes for insert operation')
-  }
+      default:
+        throw new Error(`Unknown operation type: ${op.type}`)
+    }
+  })
 
-  if (startRow < 0 || startRow >= lines.length) {
-    throw new Error(`Invalid startRow: ${startRow}`)
-  }
-
-  const line = lines[startRow]
-  const newLine = line.slice(0, startCol) + op.content + line.slice(startCol)
-  lines[startRow] = newLine
-}
-
-function handleReplace(op, lines) {
-  const { startRow, startCol, endRow, endCol } = op.attrs
-  if (
-    startRow === undefined ||
-    startCol === undefined ||
-    endRow === undefined ||
-    endCol === undefined
-  ) {
-    throw new Error('Missing required position attributes for replace operation')
-  }
-
-  if (startRow < 0 || startRow >= lines.length || endRow < 0 || endRow >= lines.length) {
-    throw new Error(`Invalid row range: ${startRow}-${endRow}`)
-  }
-
-  // 处理开始行
-  const startLine = lines[startRow]
-  lines[startRow] = startLine.slice(0, startCol) + op.content
-
-  // 处理中间行
-  for (let i = startRow + 1; i < endRow; i++) {
-    lines[i] = ''
-  }
-
-  // 处理结束行
-  if (startRow !== endRow) {
-    lines[endRow] = op.content + lines[endRow].slice(endCol)
-  }
+  return s.toString()
 }

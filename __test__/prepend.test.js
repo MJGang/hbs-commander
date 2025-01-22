@@ -1,24 +1,19 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
-import HbsCommander from '../../dist/hbs-commander.esm.js'
+import hbscmd from '../dist/hbs-commander.esm.js'
 import fs from 'fs'
 import path from 'path'
 
-describe('HbsCommander 替换模式测试', () => {
-  const commander = new HbsCommander()
-  const testDir = path.join(__dirname, 'target')
+describe('prepend模式测试', () => {
+  const targetDir = path.join(__dirname, 'target')
   const templateDir = path.join(__dirname, 'template')
   const testFiles = [
     {
       template: {
-        filename: 'replace.hbs',
-        content: `
-          {{!-- replace :startRow="1" :startCol="2" :endRow="1" :endCol="14" --}}
-          <div>替换内容</div>
-          {{!-- /replace --}}
-        `,
+        filename: 'prepend.hbs',
+        content: `{{!-- prepend --}}// prepend内容{{!-- /prepend --}}`,
       },
       target: {
-        filename: 'replace.vue',
+        filename: 'prepend.vue',
         content: `<template>
   <div>测试</div>
 </template>`,
@@ -27,13 +22,15 @@ describe('HbsCommander 替换模式测试', () => {
   ]
 
   beforeAll(() => {
-    fs.mkdirSync(testDir, { recursive: true })
+    fs.mkdirSync(targetDir, { recursive: true })
     fs.mkdirSync(templateDir, { recursive: true })
+    // 将当前工作目录切换到测试文件所在目录
+    process.chdir(__dirname)
   })
 
   beforeEach(async (context) => {
     const index = (context.task.name.match(/\d+/)?.[0] || 1) - 1
-    fs.mkdirSync(testDir, { recursive: true })
+    fs.mkdirSync(targetDir, { recursive: true })
     fs.mkdirSync(templateDir, { recursive: true })
 
     const testCase = testFiles[index]
@@ -47,21 +44,22 @@ describe('HbsCommander 替换模式测试', () => {
     } = testCase
 
     context.templatePath = path.join(templateDir, templateFilename)
-    context.targetPath = path.join(testDir, targetFilename)
+    context.targetPath = path.join(targetDir, targetFilename)
+    context.templateFilename = templateFilename
+    context.targetFilename = targetFilename
 
     fs.writeFileSync(context.templatePath, templateContent)
     fs.writeFileSync(context.targetPath, targetContent)
   })
 
-  it('1. 应该在指定位置替换内容', async ({ templatePath, targetPath }) => {
-    await commander.cmd({
-      template: templatePath,
-      target: targetPath,
+  it('1. prepend', async ({ targetPath, templateFilename, targetFilename }) => {
+    await hbscmd({
+      template: `./template/${templateFilename}`,
+      target: `./target/${targetFilename}`,
     })
 
     const result = fs.readFileSync(targetPath, 'utf-8')
 
-    expect(result).toContain('<div>替换内容</div>')
-    expect(result).toContain('<template>')
+    expect(result).toContain('// prepend内容<template>')
   })
 })
