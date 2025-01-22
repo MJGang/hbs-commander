@@ -7,6 +7,7 @@ export function executeOperations(operations, target) {
     const { attrs, content, type } = op
     switch (type) {
       case 'append':
+      case 'new':
         s.append(content)
         break
       case 'appendLeft':
@@ -18,7 +19,9 @@ export function executeOperations(operations, target) {
       case 'overwrite':
         s.overwrite(attrs.start, attrs.end, content)
         break
-
+      case 'cover':
+        s.overwrite(0, s.original.length, content)
+        break
       case 'prepend':
         s.prepend(content)
         break

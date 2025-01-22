@@ -139,6 +139,26 @@
 {{!-- /overwrite --}}
 ```
 
+11. new
+
+```hbs
+{{!-- new --}}
+<div class='new-content'>
+  <p>new 内容</p>
+</div>
+{{!-- /new --}}
+```
+
+10. cover
+
+```hbs
+{{!-- cover --}}
+<div class='new-content'>
+  <p>cover 内容</p>
+</div>
+{{!-- /cover --}}
+```
+
 #### js调用
 
 ```js
