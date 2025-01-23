@@ -1,52 +1,39 @@
+[![npm version](https://img.shields.io/npm/v/hbs-commander.svg?style=flat-square)](https://www.npmjs.com/package/hbs-commander)
+[![npm downloads](https://img.shields.io/npm/dm/hbs-commander.svg?style=flat-square)](https://npm-stat.com/charts.html?package=hbs-commander)
+[![License](https://img.shields.io/npm/l/hbs-commander.svg?style=flat-square)](https://github.com/MJGang/hbs-commander/blob/main/LICENSE)
+
 [中文文档](README_ZH.md)
 
-# hbs-commander
+# 🛠️ hbs-commander
 
-A tool to simplify Handlebars template operations
+A tool to simplify Handlebars template operations with precise control over content placement.
 
-## Features
+## ✨ Features
 
-- Comment mode (default mode): Inject syntax rules by parsing Handlebars comments; Config mode: Implement functionality by parsing config type and attrs fields
+- **📝 Comment Mode**: Inject syntax rules by parsing Handlebars comments
+- **⚙️ Config Mode**: Implement functionality through configuration options
+- **🔧 Multiple Operations**: Supports append, prepend, replace, new, cover and more
+- **🎯 Parameter Support**: Flexible parameter passing similar to Vue template syntax
+- **🧙 Magic-string Integration**: Precise content manipulation with magic-string library
 
-  - Comment mode (default mode) -- Template syntax
-  
-    1. Basic structure
+## 📦 Installation
 
-    ```hbs
-    {{!-- OperationType :paramName="paramValue" --}}
-    Operation content
-    {{!-- /OperationType --}}
-    ```
+```bash
+# Using npm
+npm install hbs-commander
 
-    2. Operation types
+# Using yarn 
+yarn add hbs-commander
 
-    Supported operation types: append, appendLeft, appendRight, update, prepend, prependLeft, prependRight, replace, replaceAll, overwrite, new, cover
+# Using pnpm
+pnpm add hbs-commander
+```
 
-    3. Parameter description
+## 🚀 Usage
 
-    Similar to Vue template attribute passing
-
-    - Parameter format: `:paramName="paramValue"`
-    - Parameter name: Refer to magic-string's corresponding parameters, [magic-string](https://github.com/Rich-Harris/magic-string?tab=readme-ov-file#methods)
-    - Supported parameter value types:
-      - String: `:str="'string content'"`
-      - Boolean: `:isShow="true"`
-      - Number: `:num="123"`
-      - Object: `:obj="{a: 1, b: '2'}"`
-      - Array: `:arr="[1, 2, 3]"`
-
-- attrs supports append, appendLeft, appendRight, update, prepend, prependLeft, prependRight, replace, replaceAll, overwrite, new, cover operations
-  - Attribute parameter passing, parameter types include string, boolean, object, array, etc.
-- Supports two target insertion methods: Read from hbs file comments (default) or directly from config options
-
-### Usage Examples
-
-***append example***
-
-**comment mode**
+### Comment Mode (Default)
 
 ```hbs
-// hbs file
 {{!-- append --}}
 <div class='new-content'>
   <p>append content</p>
@@ -54,72 +41,48 @@ A tool to simplify Handlebars template operations
 {{!-- /append --}}
 ```
 
-```js
-import hbscmd from 'hsb-commander'
+```javascript
+import hbscmd from 'hbs-commander';
 
 hbscmd({
-  template: './example/template.hbs',
-  target: './target/file.vue',
-})
+  template: './template.hbs',
+  target: './target/file.vue'
+});
 ```
 
-**config mode**
+### Config Mode
 
-```hbs
-// hbs file
-<div class='new-content'>
-  <p>append content</p>
-</div>
-```
-
-```js
-import hbscmd from 'hsb-commander'
+```javascript
+import hbscmd from 'hbs-commander';
 
 hbscmd({
-  template: './example/template.hbs',
+  template: './template.hbs',
   target: './target/file.vue',
   mode: 'config',
   type: 'append'
-})
+});
 ```
 
-***new example***
+## 📋 Supported Operations
 
-**comment mode**
+| Operation | Description |
+|-----------|-------------|
+| ➕ append    | Append content to target |
+| ⬆️ prepend   | Prepend content to target |
+| 🔄 replace   | Replace content in target |
+| 🆕 new       | Create new file with content |
+| 🖊️ cover     | Overwrite target file with content |
 
-```hbs
-// hbs file
-{{!-- new --}}
-<div>
-  <p>new</p>
-</div>
-{{!-- /new --}}
-```
+## 🤝 Contributing
 
-```js
-import hbscmd from 'hsb-commander'
+Contributions are welcome! Please follow these steps:
 
-hbscmd({
-  template: './example/template.hbs',
-  target: './target/file.vue',
-})
-```
+1. Fork the repository
+2. Create a new branch (git checkout -b feature/your-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin feature/your-feature)
+5. Create a new Pull Request
 
-**config mode**
+## 📜 License
 
-```hbs
-// hbs file
-<div>
-  <p>new</p>
-</div>
-```
-
-```js
-import hbscmd from 'hsb-commander'
-
-hbscmd({
-  template: './example/template.hbs',
-  target: './target/file.vue',
-  mode: 'config',
-  type: 'new'
-})
+MIT © [MJGang](https://github.com/MJGang)
