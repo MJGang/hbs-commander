@@ -5,7 +5,17 @@ const State = {
   CLOSE_TAG: 'CLOSE_TAG',
 }
 
-export function parseTemplate(template) {
+export function parseTemplate(template, mode = 'comment', type, attrs) {
+  if (mode === 'config') {
+    // 从配置选项读取操作
+    return [
+      {
+        type,
+        content: template,
+        attrs,
+      },
+    ]
+  }
   const operations = []
   const stack = []
 

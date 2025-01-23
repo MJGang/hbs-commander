@@ -4,7 +4,14 @@ import fs from 'node:fs/promises'
 import { existsSync } from 'fs'
 import path from 'node:path'
 
-async function hbsCommander({ template, target }) {
+async function hbsCommander({ template, target, mode = 'comment', type, attrs }) {
+  // 验证mode参数
+  if (!['comment', 'config'].includes(mode)) {
+    throw new Error(`Invalid mode: ${mode}. Must be either 'comment' or 'config'`)
+  }
+  if (mode === 'config' && !type) {
+    throw new Error('Type is required when mode is "config"')
+  }
   const cwd = process.cwd()
   // 解析路径
   const resolvePath = (filePath) => {
@@ -27,7 +34,7 @@ async function hbsCommander({ template, target }) {
   }
 
   // 解析模板并执行操作
-  const operations = parseTemplate(templateContent)
+  const operations = parseTemplate(templateContent, mode, type, attrs)
 
   // 如果目标文件不存在则创建空文件
   let targetContent = ''

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, beforeEach } from 'vitest'
-import hbscmd from '../dist/hbs-commander.esm.js'
+import hbscmd from '../../dist/hbs-commander.esm.js'
 import fs from 'fs'
 import path from 'path'
 
@@ -29,6 +29,20 @@ describe('cover 模式测试', () => {
   })
 
   beforeEach(async (context) => {
+    // 清空template和target目录
+    const clearDirectory = (dir) => {
+      if (fs.existsSync(dir)) {
+        fs.readdirSync(dir).forEach((file) => {
+          const filePath = path.join(dir, file)
+          if (fs.lstatSync(filePath).isFile()) {
+            fs.unlinkSync(filePath)
+          }
+        })
+      }
+    }
+    clearDirectory(templateDir)
+    clearDirectory(targetDir)
+
     const index = (context.task.name.match(/\d+/)?.[0] || 1) - 1
     fs.mkdirSync(targetDir, { recursive: true })
     fs.mkdirSync(templateDir, { recursive: true })

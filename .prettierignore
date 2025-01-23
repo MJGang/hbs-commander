@@ -1,4 +1,4 @@
 package.json
 pnpm-lock.yaml
 *.hbs
-README.md
+*.md
