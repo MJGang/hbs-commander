@@ -107,7 +107,7 @@ export function parseTemplate(template, mode = 'comment', type, attrs) {
           const openTag = stack.pop()
           const operation = {
             type: openTag.type,
-            content: template.slice(contentStart, i - buffer.length - 4 - 7 + 1).trim(), // 4 for --}} 7 for {{!-- /
+            content: template.slice(contentStart, i - buffer.length - 4 - 7 + 1), // 4 for --}} 7 for {{!-- /
             attrs: openTag.attrs,
             startIndex: openTag.startIndex,
             endIndex: i,
