@@ -1,5 +1,23 @@
 import MagicString from 'magic-string'
 
+function calculateIndex(target, row, col) {
+  const lines = target.split('\n')
+  let index = 0
+  for (let i = 0; i < row - 1; i++) {
+    if (i < lines.length) {
+      index += lines[i].length + 1 // +1 for the newline character
+    } else {
+      // 如果指定的行号大于实际行数，则追加到末尾
+      return target.length
+    }
+  }
+  if (row - 1 < lines.length) {
+    index += Math.min(col, lines[row - 1].length)
+  }
+
+  return index
+}
+
 export function executeOperations(operations, target) {
   const s = new MagicString(target)
 
@@ -8,13 +26,35 @@ export function executeOperations(operations, target) {
     switch (type) {
       case 'append':
       case 'new':
-        s.append(content)
+        {
+          if (type === 'append' && attrs.row !== undefined && attrs.col !== undefined) {
+            const index = calculateIndex(target, attrs.row, attrs.col)
+            s.appendRight(index, content)
+          } else {
+            s.append(content)
+          }
+        }
         break
       case 'appendLeft':
-        s.appendLeft(attrs.index, content)
+        {
+          if (attrs.index) {
+            s.appendLeft(attrs.index, content)
+          } else {
+            const index = calculateIndex(target, attrs.row, attrs.col)
+            s.appendLeft(index, content)
+          }
+        }
         break
       case 'appendRight':
-        s.appendRight(attrs.index, content)
+        {
+          if (attrs.index) {
+            s.appendRight(attrs.index, content)
+          } else {
+            const index = calculateIndex(target, attrs.row, attrs.col)
+            console.log('index', index)
+            s.appendRight(index, content)
+          }
+        }
         break
       case 'overwrite':
         s.overwrite(attrs.start, attrs.end, content)

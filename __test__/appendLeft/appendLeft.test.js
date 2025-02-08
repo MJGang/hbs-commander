@@ -3,29 +3,21 @@ import hbscmd from '../../src/index.js'
 import fs from 'fs'
 import path from 'path'
 
-describe('append模式测试', () => {
+describe('appendLeft模式测试', () => {
   const targetDir = path.join(__dirname, 'target')
   const templateDir = path.join(__dirname, 'template')
   const testFiles = [
     {
       template: {
-        filename: 'append.hbs',
-        content: `{{!-- append --}}// append内容{{!-- /append --}}`,
+        filename: 'appendLeft.hbs',
+        content: `
+{{!-- appendLeft :row="2" :col="3" --}}
+// appendLeft内容
+{{!-- /appendLeft --}}
+`,
       },
       target: {
-        filename: 'append.vue',
-        content: `<template>
-  <div>测试</div>
-</template>`,
-      },
-    },
-    {
-      template: {
-        filename: 'append-row-col.hbs',
-        content: `{{!-- append :row="2" :col="15" --}}// append-row-col内容{{!-- /append --}}`,
-      },
-      target: {
-        filename: 'append-row-col.vue',
+        filename: 'appendLeft.vue',
         content: `<template>
   <div>测试</div>
 </template>`,
@@ -41,19 +33,19 @@ describe('append模式测试', () => {
   })
 
   beforeEach(async (context) => {
-    // // 清空template和target目录
-    // const clearDirectory = (dir) => {
-    //   if (fs.existsSync(dir)) {
-    //     fs.readdirSync(dir).forEach((file) => {
-    //       const filePath = path.join(dir, file)
-    //       if (fs.lstatSync(filePath).isFile()) {
-    //         fs.unlinkSync(filePath)
-    //       }
-    //     })
-    //   }
-    // }
-    // clearDirectory(templateDir)
-    // clearDirectory(targetDir)
+    // 清空template和target目录
+    const clearDirectory = (dir) => {
+      if (fs.existsSync(dir)) {
+        fs.readdirSync(dir).forEach((file) => {
+          const filePath = path.join(dir, file)
+          if (fs.lstatSync(filePath).isFile()) {
+            fs.unlinkSync(filePath)
+          }
+        })
+      }
+    }
+    clearDirectory(templateDir)
+    clearDirectory(targetDir)
 
     const index = (context.task.name.match(/\d+/)?.[0] || 1) - 1
     fs.mkdirSync(targetDir, { recursive: true })
@@ -78,7 +70,7 @@ describe('append模式测试', () => {
     fs.writeFileSync(context.targetPath, targetContent)
   })
 
-  it('1. append--追加内容', async ({ targetPath, templateFilename, targetFilename }) => {
+  it('1. appendLeft--追加内容', async ({ targetPath, templateFilename, targetFilename }) => {
     await hbscmd({
       template: `./template/${templateFilename}`,
       target: `./target/${targetFilename}`,
@@ -86,17 +78,6 @@ describe('append模式测试', () => {
 
     const result = fs.readFileSync(targetPath, 'utf-8')
 
-    expect(result).toContain('</template>// append内容')
-  })
-
-  it('2. append-row-col--追加内容', async ({ targetPath, templateFilename, targetFilename }) => {
-    await hbscmd({
-      template: `./template/${templateFilename}`,
-      target: `./target/${targetFilename}`,
-    })
-
-    const result = fs.readFileSync(targetPath, 'utf-8')
-
-    expect(result).toContain('  <div>测试</div>// append-row-col内容')
+    expect(result).toContain('  <// appendLeft内容div>测试</div>')
   })
 })
