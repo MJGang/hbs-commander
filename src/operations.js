@@ -23,62 +23,59 @@ export function executeOperations(operations, target) {
 
   operations.forEach((op) => {
     const { attrs, content, type } = op
+    let insertContent = content
+    if (attrs?.newLine) {
+      insertContent = '\n' + content
+    }
     switch (type) {
       case 'append':
       case 'new':
-        {
-          if (type === 'append' && attrs.row !== undefined && attrs.col !== undefined) {
-            const index = calculateIndex(target, attrs.row, attrs.col)
-            s.appendRight(index, content)
-          } else {
-            s.append(content)
-          }
-        }
+        s.append(insertContent)
         break
       case 'appendLeft':
         {
           if (attrs.index) {
-            s.appendLeft(attrs.index, content)
+            s.appendLeft(attrs.index, insertContent)
           } else {
             const index = calculateIndex(target, attrs.row, attrs.col)
-            s.appendLeft(index, content)
+            s.appendLeft(index, insertContent)
           }
         }
         break
       case 'appendRight':
         {
           if (attrs.index) {
-            s.appendRight(attrs.index, content)
+            s.appendRight(attrs.index, insertContent)
           } else {
             const index = calculateIndex(target, attrs.row, attrs.col)
             console.log('index', index)
-            s.appendRight(index, content)
+            s.appendRight(index, insertContent)
           }
         }
         break
       case 'overwrite':
-        s.overwrite(attrs.start, attrs.end, content)
+        s.overwrite(attrs.start, attrs.end, insertContent)
         break
       case 'cover':
-        s.overwrite(0, s.original.length, content)
+        s.overwrite(0, s.original.length, insertContent)
         break
       case 'prepend':
-        s.prepend(content)
+        s.prepend(insertContent)
         break
       case 'prependLeft':
-        s.prependLeft(attrs.index, content)
+        s.prependLeft(attrs.index, insertContent)
         break
       case 'prependRight':
-        s.prependRight(attrs.index, content)
+        s.prependRight(attrs.index, insertContent)
         break
       case 'replace':
-        s.replace(attrs.regexpOrString, content)
+        s.replace(attrs.regexpOrString, insertContent)
         break
       case 'replaceAll':
-        s.replaceAll(attrs.regexpOrString, content)
+        s.replaceAll(attrs.regexpOrString, insertContent)
         break
       case 'update':
-        s.update(attrs.start, attrs.end, content)
+        s.update(attrs.start, attrs.end, insertContent)
         break
 
       default:

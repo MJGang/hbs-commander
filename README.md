@@ -65,13 +65,17 @@ hbscmd({
 
 ## 📋 Supported Operations
 
-| Operation | Description |
-|-----------|-------------|
-| ➕ append    | Append content to target |
-| ⬆️ prepend   | Prepend content to target |
-| 🔄 replace   | Replace content in target |
-| 🆕 new       | Create new file with content |
-| 🖊️ cover     | Overwrite target file with content |
+| Operation | Description | Attrs |
+|-----------|-------------|--------|
+| ➕ append    | Append content to target | `newLine` |
+| ⬅️ appendLeft | Append content to the left | `newLine`,`index`, `row`, `col` |
+| ➡️ appendRight | Append content to the right | `newLine`,`index`, `row`, `col` |
+| ⬆️ prepend   | Prepend content to target | `newLine` |
+| ⏴ prependLeft | Prepend content to the left | `newLine`,`index` |
+| ⏵ prependRight | Prepend content to the right | `newLine`,`index` |
+| 🔄 replace   | Replace content in target | `regexpOrString` |
+| 🆕 new       | Create new file with content |  |
+| 🖊️ cover     | Overwrite target file with content |  |
 
 ## 🤝 Contributing
 
