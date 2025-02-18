@@ -15,6 +15,10 @@ A tool to simplify Handlebars template operations with precise control over cont
 - **🔧 Multiple Operations**: Supports append, prepend, replace, new, cover and more
 - **🎯 Parameter Support**: Flexible parameter passing similar to Vue template syntax
 - **🧙 Magic-string Integration**: Precise content manipulation with magic-string library
+- **📁 Directory Processing**: Recursive directory handling
+- **🔄 Auto Extension Handling**: Automatically remove .hbs extension
+- **🚫 File Filtering**: Only process .hbs template files
+- **📂 Auto Directory Creation**: Create missing target directories
 
 ## 📦 Installation
 
@@ -62,6 +66,30 @@ hbscmd({
   type: 'append'
 });
 ```
+
+### Directory Processing Example
+
+```javascript
+// Process entire directory
+hbscmd({
+  template: './templates',  // Template directory
+  target: './src',          // Target directory
+  mode: 'comment'           // or 'config'
+})
+```
+
+### Extension Handling Rules
+
+Template naming convention:
+
+- `filename.ext.hbs` → `filename.ext`
+- `filename.hbs` → `filename`
+
+Examples:
+
+- `button.html.hbs` → `button.html`
+- `main.js.hbs` → `main.js`
+- `config.hbs` → `config`
 
 ## 📋 Supported Operations
 

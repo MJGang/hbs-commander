@@ -9,6 +9,10 @@
 - **🔧 多种操作**：支持 append、prepend、replace、new、cover 等
 - **🎯 参数支持**：灵活的参数传递，类似于 Vue 模板语法
 - **🧙 Magic-string 集成**：使用 magic-string 库进行精确的内容操作
+- **📁 目录处理**：支持递归处理整个目录结构
+- **🔄 自动扩展名处理**：自动去除.hbs扩展名生成目标文件
+- **🚫 文件过滤**：仅处理.hbs模板文件，忽略其他文件
+- **📂 目录自动创建**：自动创建不存在的目标目录结构
 
 ## 📦 安装
 
@@ -56,6 +60,28 @@ hbscmd({
   type: 'append'
 });
 ```
+
+### 目录处理示例
+
+```javascript
+// 处理整个目录
+hbscmd({
+  template: './templates',  // 模板目录
+  target: './src',          // 目标目录
+  mode: 'comment'           // 或 'config'
+})
+```
+
+### 扩展名处理规则
+
+模板文件命名规则：
+- `文件名.扩展名.hbs` → 生成 `文件名.扩展名`
+- `文件名.hbs` → 生成 `文件名`
+
+示例：
+- `button.html.hbs` → `button.html`
+- `main.js.hbs` → `main.js`
+- `config.hbs` → `config`
 
 ## 📋 支持的操作
 

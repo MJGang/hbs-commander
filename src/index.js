@@ -13,6 +13,7 @@ async function hbsCommander({ template, target, mode = 'comment', type, attrs })
     throw new Error('Type is required when mode is "config"')
   }
   const cwd = process.cwd()
+
   // 解析路径
   const resolvePath = (filePath) => {
     if (path.isAbsolute(filePath)) {
@@ -21,41 +22,88 @@ async function hbsCommander({ template, target, mode = 'comment', type, attrs })
     return path.resolve(cwd, filePath)
   }
 
-  // 读取文件
+  // 读取文件或目录
+  const processFile = async (templatePath, targetPath) => {
+    // 添加文件处理日志
+    console.log(`Processing file: ${templatePath} -> ${targetPath}`)
+    let templateContent = ''
+    if (existsSync(templatePath)) {
+      templateContent = await fs.readFile(templatePath, 'utf-8')
+    } else {
+      throw new Error(`Template file not found: ${templatePath}`)
+    }
+
+    const operations = parseTemplate(templateContent, mode, type, attrs)
+
+    let targetContent = ''
+    if (existsSync(targetPath)) {
+      if (operations.some((op) => op.type === 'new')) {
+        throw new Error(`target file already exists: ${targetPath}`)
+      } else {
+        targetContent = await fs.readFile(targetPath, 'utf-8')
+      }
+    } else {
+      if (operations.some((op) => op.type === 'new')) {
+        await fs.writeFile(targetPath, '')
+      } else {
+        throw new Error(`target file not found: ${targetPath}`)
+      }
+    }
+
+    const result = executeOperations(operations, targetContent)
+    await fs.writeFile(targetPath, result)
+  }
+
+  const processDirectory = async (templateDir, targetDir) => {
+    console.log(`Processing directory: ${templateDir} -> ${targetDir}`)
+
+    const files = await fs.readdir(templateDir)
+    await Promise.all(
+      files.map(async (file) => {
+        const templatePath = path.join(templateDir, file)
+        const ext = path.extname(file)
+        const targetFile = ext === '.hbs' ? path.basename(file, ext) : file
+        const targetPath = path.join(targetDir, targetFile)
+
+        const stat = await fs.stat(templatePath)
+
+        if (stat.isDirectory()) {
+          if (!existsSync(targetPath)) {
+            await fs.mkdir(targetPath, { recursive: true })
+          }
+          return processDirectory(templatePath, targetPath)
+        } else if (stat.isFile()) {
+          if (ext === '.hbs') {
+            return processFile(templatePath, targetPath)
+          } else {
+            console.log(`Skipping non-template file: ${templatePath}`)
+            return Promise.resolve()
+          }
+        }
+      }),
+    )
+  }
+
   const templatePath = resolvePath(template)
   const targetPath = resolvePath(target)
 
-  let templateContent = ''
-  // 检查模板文件是否存在
-  if (existsSync(templatePath)) {
-    templateContent = await fs.readFile(templatePath, 'utf-8')
-  } else {
-    throw new Error(`Template file not found: ${templatePath}`)
-  }
+  const templateStat = await fs.stat(templatePath)
+  const targetStat = existsSync(targetPath) ? await fs.stat(targetPath) : null
 
-  // 解析模板并执行操作
-  const operations = parseTemplate(templateContent, mode, type, attrs)
-
-  // 如果目标文件不存在则创建空文件
-  let targetContent = ''
-  if (existsSync(targetPath)) {
-    if (operations.some((op) => op.type === 'new')) {
-      throw new Error(`target file already exists: ${targetPath}`)
-    } else {
-      targetContent = await fs.readFile(targetPath, 'utf-8')
+  if (templateStat.isDirectory()) {
+    if (targetStat && !targetStat.isDirectory()) {
+      throw new Error('When template is a directory, target must also be a directory')
     }
-  } else {
-    if (operations.some((op) => op.type === 'new')) {
-      await fs.writeFile(targetPath, '')
-    } else {
-      throw new Error(`target file not found: ${targetPath}`)
+    if (!existsSync(targetPath)) {
+      await fs.mkdir(targetPath, { recursive: true })
     }
+    await processDirectory(templatePath, targetPath)
+  } else {
+    if (targetStat && targetStat.isDirectory()) {
+      throw new Error('When template is a file, target must also be a file')
+    }
+    await processFile(templatePath, targetPath)
   }
-
-  const result = executeOperations(operations, targetContent)
-
-  // 写入结果
-  await fs.writeFile(targetPath, result)
 }
 
 export default hbsCommander
