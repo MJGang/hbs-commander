@@ -1,5 +1,5 @@
 import { parseTemplate } from './parser.js'
-import { executeOperations, flushFileCache, clearFileCache } from './operations.js'
+import { executeOperations, applyDeferredWrites, clearFileCache } from './operations.js'
 import fs from 'node:fs/promises'
 import { existsSync } from 'fs'
 import path from 'node:path'
@@ -123,7 +123,7 @@ async function hbsCommander({
 }
 
 // 导出主函数和辅助函数
-hbsCommander.flushFileCache = async () => await flushFileCache(fs)
+hbsCommander.applyDeferredWrites = async () => await applyDeferredWrites(fs)
 hbsCommander.clearFileCache = clearFileCache
 
 export default hbsCommander

@@ -101,7 +101,7 @@ line 3`,
     ])
 
     // 手动触发写入
-    await hbscmd.flushFileCache()
+    await hbscmd.applyDeferredWrites()
 
     // 读取结果
     const result = await fs.readFile(path.join(targetDir, 'target.js'), 'utf-8')

@@ -99,7 +99,7 @@ await Promise.all([
 ]);
 
 // Flush all changes to disk after all operations are complete
-await hbscmd.flushFileCache();
+await hbscmd.applyDeferredWrites();
 ```
 
 ### Extension Handling Rules

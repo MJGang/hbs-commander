@@ -93,7 +93,7 @@ await Promise.all([
 ]);
 
 // 所有操作完成后一次性将所有更改写入磁盘
-await hbscmd.flushFileCache();
+await hbscmd.applyDeferredWrites();
 ```
 
 ### 扩展名处理规则

@@ -32,7 +32,7 @@ export function getFileCache() {
 }
 
 // 手动触发所有缓存文件的写入
-export async function flushFileCache(fs) {
+export async function applyDeferredWrites(fs) {
   const promises = []
   for (const [filePath, { magicString }] of fileCache.entries()) {
     promises.push(fs.writeFile(filePath, magicString.toString()))
