@@ -1,5 +1,8 @@
 import MagicString from 'magic-string'
 
+// 文件操作缓存，用于存储每个文件路径对应的 MagicString 实例
+const fileCache = new Map()
+
 function calculateIndex(target, row, col) {
   const lines = target.split('\n')
   let index = 0
@@ -18,8 +21,43 @@ function calculateIndex(target, row, col) {
   return index
 }
 
-export function executeOperations(operations, target) {
-  const s = new MagicString(target)
+// 清除文件缓存
+export function clearFileCache() {
+  fileCache.clear()
+}
+
+// 获取文件缓存
+export function getFileCache() {
+  return fileCache
+}
+
+// 手动触发所有缓存文件的写入
+export async function flushFileCache(fs) {
+  const promises = []
+  for (const [filePath, { magicString }] of fileCache.entries()) {
+    promises.push(fs.writeFile(filePath, magicString.toString()))
+  }
+  await Promise.all(promises)
+  clearFileCache()
+  return promises.length
+}
+
+export function executeOperations(operations, target, options = {}) {
+  const { filePath, deferWrite } = options
+
+  let s
+
+  // 如果提供了文件路径且启用了延迟写入，尝试从缓存中获取 MagicString 实例
+  if (filePath && deferWrite) {
+    if (fileCache.has(filePath)) {
+      s = fileCache.get(filePath).magicString
+    } else {
+      s = new MagicString(target)
+      fileCache.set(filePath, { magicString: s, originalContent: target })
+    }
+  } else {
+    s = new MagicString(target)
+  }
 
   operations.forEach((op) => {
     const { attrs, content, type } = op
@@ -29,27 +67,40 @@ export function executeOperations(operations, target) {
     }
     switch (type) {
       case 'append':
+        if (attrs && attrs.row !== undefined && attrs.col !== undefined) {
+          // 如果指定了行列，使用 appendRight
+          const index = calculateIndex(target, attrs.row, attrs.col)
+          s.appendRight(index, insertContent)
+        } else {
+          // 否则追加到末尾
+          s.append(insertContent)
+        }
+        break
       case 'new':
         s.append(insertContent)
         break
       case 'appendLeft':
         {
-          if (attrs.index) {
+          if (attrs.index !== undefined) {
             s.appendLeft(attrs.index, insertContent)
-          } else {
+          } else if (attrs.row !== undefined && attrs.col !== undefined) {
             const index = calculateIndex(target, attrs.row, attrs.col)
             s.appendLeft(index, insertContent)
+          } else {
+            throw new Error('appendLeft requires either index or row and col attributes')
           }
         }
         break
       case 'appendRight':
         {
-          if (attrs.index) {
+          if (attrs.index !== undefined) {
             s.appendRight(attrs.index, insertContent)
-          } else {
+          } else if (attrs.row !== undefined && attrs.col !== undefined) {
             const index = calculateIndex(target, attrs.row, attrs.col)
             console.log('index', index)
             s.appendRight(index, insertContent)
+          } else {
+            throw new Error('appendRight requires either index or row and col attributes')
           }
         }
         break

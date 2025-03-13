@@ -1,10 +1,17 @@
 import { parseTemplate } from './parser.js'
-import { executeOperations } from './operations.js'
+import { executeOperations, flushFileCache, clearFileCache } from './operations.js'
 import fs from 'node:fs/promises'
 import { existsSync } from 'fs'
 import path from 'node:path'
 
-async function hbsCommander({ template, target, mode = 'comment', type, attrs }) {
+async function hbsCommander({
+  template,
+  target,
+  mode = 'comment',
+  type,
+  attrs,
+  deferWrite = false,
+}) {
   // 验证mode参数
   if (!['comment', 'config'].includes(mode)) {
     throw new Error(`Invalid mode: ${mode}. Must be either 'comment' or 'config'`)
@@ -50,8 +57,17 @@ async function hbsCommander({ template, target, mode = 'comment', type, attrs })
       }
     }
 
-    const result = executeOperations(operations, targetContent)
-    await fs.writeFile(targetPath, result)
+    const result = executeOperations(operations, targetContent, {
+      filePath: targetPath,
+      deferWrite,
+    })
+
+    // 只有在不延迟写入的情况下才立即写入文件
+    if (!deferWrite) {
+      await fs.writeFile(targetPath, result)
+    }
+
+    return result
   }
 
   const processDirectory = async (templateDir, targetDir) => {
@@ -105,5 +121,9 @@ async function hbsCommander({ template, target, mode = 'comment', type, attrs })
     await processFile(templatePath, targetPath)
   }
 }
+
+// 导出主函数和辅助函数
+hbsCommander.flushFileCache = async () => await flushFileCache(fs)
+hbsCommander.clearFileCache = clearFileCache
 
 export default hbsCommander

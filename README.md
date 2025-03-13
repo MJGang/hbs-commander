@@ -19,6 +19,7 @@ A tool to simplify Handlebars template operations with precise control over cont
 - **🔄 Auto Extension Handling**: Automatically remove .hbs extension
 - **🚫 File Filtering**: Only process .hbs template files
 - **📂 Auto Directory Creation**: Create missing target directories
+- **⏱️ Deferred Write**: Prevent race conditions by deferring file writes
 
 ## 📦 Installation
 
@@ -76,6 +77,29 @@ hbscmd({
   target: './src',          // Target directory
   mode: 'comment'           // or 'config'
 })
+```
+
+### Deferred Write Mode
+
+Use deferred write to prevent race conditions when multiple operations modify the same file:
+
+```javascript
+// Multiple operations on the same file
+await Promise.all([
+  hbscmd({
+    template: './template1.hbs',
+    target: './target/file.vue',
+    deferWrite: true  // Enable deferred write
+  }),
+  hbscmd({
+    template: './template2.hbs',
+    target: './target/file.vue',
+    deferWrite: true  // Enable deferred write
+  })
+]);
+
+// Flush all changes to disk after all operations are complete
+await hbscmd.flushFileCache();
 ```
 
 ### Extension Handling Rules

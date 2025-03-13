@@ -13,6 +13,7 @@
 - **🔄 自动扩展名处理**：自动去除.hbs扩展名生成目标文件
 - **🚫 文件过滤**：仅处理.hbs模板文件，忽略其他文件
 - **📂 目录自动创建**：自动创建不存在的目标目录结构
+- **⏱️ 延迟写入**：通过延迟文件写入防止竞态条件
 
 ## 📦 安装
 
@@ -70,6 +71,29 @@ hbscmd({
   target: './src',          // 目标目录
   mode: 'comment'           // 或 'config'
 })
+```
+
+### 延迟写入模式
+
+使用延迟写入模式防止多个操作修改同一文件时的竞态条件：
+
+```javascript
+// 对同一文件进行多个操作
+await Promise.all([
+  hbscmd({
+    template: './template1.hbs',
+    target: './target/file.vue',
+    deferWrite: true  // 启用延迟写入
+  }),
+  hbscmd({
+    template: './template2.hbs',
+    target: './target/file.vue',
+    deferWrite: true  // 启用延迟写入
+  })
+]);
+
+// 所有操作完成后一次性将所有更改写入磁盘
+await hbscmd.flushFileCache();
 ```
 
 ### 扩展名处理规则
