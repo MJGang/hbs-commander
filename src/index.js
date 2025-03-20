@@ -31,8 +31,6 @@ async function hbsCommander({
 
   // 读取文件或目录
   const processFile = async (templatePath, targetPath) => {
-    // 添加文件处理日志
-    console.log(`Processing file: ${templatePath} -> ${targetPath}`)
     let templateContent = ''
     if (existsSync(templatePath)) {
       templateContent = await fs.readFile(templatePath, 'utf-8')
@@ -71,8 +69,6 @@ async function hbsCommander({
   }
 
   const processDirectory = async (templateDir, targetDir) => {
-    console.log(`Processing directory: ${templateDir} -> ${targetDir}`)
-
     const files = await fs.readdir(templateDir)
     await Promise.all(
       files.map(async (file) => {
@@ -92,7 +88,6 @@ async function hbsCommander({
           if (ext === '.hbs') {
             return processFile(templatePath, targetPath)
           } else {
-            console.log(`Skipping non-template file: ${templatePath}`)
             return Promise.resolve()
           }
         }

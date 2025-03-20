@@ -97,7 +97,6 @@ export function executeOperations(operations, target, options = {}) {
             s.appendRight(attrs.index, insertContent)
           } else if (attrs.row !== undefined && attrs.col !== undefined) {
             const index = calculateIndex(target, attrs.row, attrs.col)
-            console.log('index', index)
             s.appendRight(index, insertContent)
           } else {
             throw new Error('appendRight requires either index or row and col attributes')
